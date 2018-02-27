@@ -16,32 +16,30 @@
 
 const int LEFT_DRIVE_MOTOR_PORT = 11;
 const int RIGHT_DRIVE_MOTOR_PORT = 9;
-const int INTAKE_MOTOR_PORT = 7;
+const int INTAKE_MOTOR_PORT = 8;
 const int ARM_MOTOR_PORT = 10;
 const int ARM_POT_PIN = 11;
+void convertJoystickSignalToDrive(double &lValue, double &rValue);
+
 
 MyRobot robot;
 DFW dfw(&robot); // Instantiates the DFW object and setting the debug pin. The debug pin will be set high if no communication is seen after 2 seconds
-DriveTrain *drive;
+DriveTrain *driveTrain;
 Intake *intake;
 Arm *arm;
 
 void setup() {
 	Serial.begin(9600); // Serial output begin. Only needed for debug
 	dfw.begin(); // Serial1 output begin for DFW library. Buad and port #."Serial1 only"
-	robot.initialize(new DriveTrain(LEFT_DRIVE_MOTOR_PORT, RIGHT_DRIVE_MOTOR_PORT));
-  drive = new DriveTrain(LEFT_DRIVE_MOTOR_PORT, RIGHT_DRIVE_MOTOR_PORT);
-  intake = new Intake(INTAKE_MOTOR_PORT);
-  arm = new Arm(ARM_MOTOR_PORT, ARM_POT_PIN);
-  arm->pickUpPosition();
-  //arm->dumpBalls();
-	robot.dfw=&dfw;
+	robot.initialize(new DriveTrain(LEFT_DRIVE_MOTOR_PORT, RIGHT_DRIVE_MOTOR_PORT),
+	                 new Intake(INTAKE_MOTOR_PORT),
+	                 new Arm(ARM_MOTOR_PORT, ARM_POT_PIN));
+  robot.dfw=&dfw;
 }
 void loop() {
-	//dfw.run();
-  //drive->drive(1,1);
-  intake->runIntake();
-  Serial.println(arm->calibrationMethod());
-  arm->doState();
-  
+  dfw.run();
+  robot.teleop(0);
 }
+
+
+

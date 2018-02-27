@@ -1,4 +1,6 @@
 #include "DriveTrain.h"
+Encoder leftEncoder(2,3);
+Encoder rightEncoder(18,19);
 /**
  * Instantiates a drive train object
  * @param leftMotorPort the port that the left motor is attached to
@@ -19,14 +21,15 @@ void DriveTrain::driveStraight(double distance, double speedVal){
   
 }
 
-/**TODO invert one of the motors
+/**
  * Drive the robot using teleoperated control
  * @param lValue double between -1 and 1: -1 being full back, 1 being full forward for left motor 
  * @param rValue double between -1 and 1: -1 being full back, 1 being full forward for right motor 
  */
 void DriveTrain::drive(double lValue, double rValue){
-  rightMotor.write(lValue);
-  leftMotor.write(rValue);
+  rightMotor.write(90 - (90*rValue));
+  leftMotor.write(90 + (90*lValue));
+  //testEncoders();
 }
 /** TODO implement
  * Rotate to the given angle using encoders and PID
@@ -41,6 +44,12 @@ void DriveTrain::rotateTo(int angle){
 void DriveTrain::stopDriving(){
   leftMotor.write(90);
   rightMotor.write(90);
+}
+/**
+ * Prints out the values of the encoders
+ */
+void DriveTrain::testEncoders(){
+  Serial.println("Left: " + String(leftEncoder.read()) + "Right: " + String(leftEncoder.read()));
 }
 
 

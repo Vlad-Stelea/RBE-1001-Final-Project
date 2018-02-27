@@ -3,6 +3,7 @@
 
 Arm::Arm(int motorPin, int potPort):potPin(potPort){
   armMotor.attach(motorPin, 1000, 2000);
+  state = collect;
 }
 /**
  * Sets the state to be ready to dump balls by changing the requiredAngle
@@ -32,6 +33,20 @@ void Arm::doState(){
  */
 int Arm::calibrationMethod(){
   return analogRead(potPin);
+}
+/**
+ * Toggles the arm 
+ *  this means that if the arm is in the dumping position it changes it to the collecting position and vice versa
+ */
+void Arm::togglePosition(){
+  if(state == collect){
+    dumpBalls();
+    state = dump;
+  }else{
+    pickUpPosition();
+    state = collect;
+  }
+  
 }
 /**
  * TODO give proper commenting
