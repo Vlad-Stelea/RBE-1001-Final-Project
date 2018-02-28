@@ -1,6 +1,7 @@
 #include "DriveTrain.h"
-Encoder leftEncoder(2,3);
-Encoder rightEncoder(18,19);
+MD_REncoder leftEncoder(12,13);
+MD_REncoder rightEncoder(22,23);
+
 /**
  * Instantiates a drive train object
  * @param leftMotorPort the port that the left motor is attached to
@@ -10,14 +11,15 @@ DriveTrain::DriveTrain(int leftMotorPort, int rightMotorPort):
                           leftPort(leftMotorPort),rightPort(rightMotorPort){
   leftMotor.attach(leftMotorPort, 1000, 2000);
   rightMotor.attach(rightMotorPort, 1000, 2000);
+  drive(0,0);
+  leftEncoder.begin();
 }
 /**TODO
- * Drives the robot straight using PID for a set distance at a given speed
- * @param distance the distance in inches that the robot has to drive
- * @param speedVal the speed that the motors should be driving during this 
+ * Drives the robot straight using Proportion control for a set given speed
+ * @param speedVal the speed that the motors should be idealy driving during this 
  *  function. This is a value between 0 and 1.
  */
-void DriveTrain::driveStraight(double distance, double speedVal){
+void DriveTrain::driveStraight(double speedVal){
   
 }
 
@@ -31,11 +33,13 @@ void DriveTrain::drive(double lValue, double rValue){
   leftMotor.write(90 + (90*lValue));
   //testEncoders();
 }
+int rotateAngle = 0;
 /** TODO implement
  * Rotate to the given angle using encoders and PID
- * @param angle angle in radians to rotate to from starting position
+ * @param angle angle in degrees to rotate to from starting position
  */
 void DriveTrain::rotateTo(int angle){
+  
   
 }
 /**
@@ -45,11 +49,21 @@ void DriveTrain::stopDriving(){
   leftMotor.write(90);
   rightMotor.write(90);
 }
+
 /**
  * Prints out the values of the encoders
  */
 void DriveTrain::testEncoders(){
-  Serial.println("Left: " + String(leftEncoder.read()) + "Right: " + String(leftEncoder.read()));
+  uint8_t x = leftEncoder.read();
+  if (x) 
+  {
+    Serial.print(x == DIR_CW ? "\n+1" : "\n-1");
+#if ENABLE_SPEED
+    Serial.print("  ");
+    Serial.print("Left Encoder " + String(leftEncoder.speed()) + " Right Encoder: " + String(rightEncoder.speed()));
+#endif
+  }
 }
+
 
 

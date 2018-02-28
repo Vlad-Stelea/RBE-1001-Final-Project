@@ -38,8 +38,10 @@ void setup() {
 }
 void loop() {
   dfw.run();
-  robot.teleop(0);
+  //robot.teleop(0);
+  //Serial.println("RIGHT: " + String(analogRead(0)) + " LEFT: " + String(analogRead(1)));
 }
+
 
 
 

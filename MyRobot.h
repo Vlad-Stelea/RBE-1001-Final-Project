@@ -5,10 +5,15 @@
 #include "DriveTrain.h"
 #include "Intake.h"
 #include "Arm.h"
-
+#include "LineTracker.h"
 
 class MyRobot :public AbstractDFWRobot{
   private:
+  LineTracker lTracker;
+  const int BLUE_PORT = 23;//if this is plugged in this means that robot should run blue auto
+  const int initialDriveSpeed = 1;
+  const int turnSpeed = .25;
+  const int BUMPER_PORT = 25;//TODO CHANGE
   public:
   	DFW * dfw;
     DriveTrain *driveBase;
@@ -46,3 +51,4 @@ class MyRobot :public AbstractDFWRobot{
     void convertJoystickSignalToDrive(double &lValue, double &rValue);
   	~MyRobot(){};
 };
+
