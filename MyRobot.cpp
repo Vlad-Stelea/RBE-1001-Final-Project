@@ -8,7 +8,6 @@ enum autoState{
   BLUE_MID
 };
 
-bool doneWithAuto = false;
 autoState thisAuto; //represents the auto state of this program
 
 bool r1Released = false;//keeps track if r1 has been released since it was pressed down
@@ -16,14 +15,19 @@ bool r1Released = false;//keeps track if r1 has been released since it was press
  * These are the execution runtions
  */
 void MyRobot::initialize(DriveTrain *driveTrain, Intake *intakeMech, Arm *armMech, MyEncoder *leftEnc, MyEncoder *rightEnc) {
+  pinMode(22, INPUT);
   driveBase = driveTrain;
   intake = intakeMech;
   arm = armMech;
   lEnc = leftEnc;
   rEnc = rightEnc;
   pinMode(bumpSwitch, INPUT_PULLUP);
-  if(digitalRead(24)){
+  if(analogRead(0)){
     thisAuto = LOW_GOAL;
+  }else if(analogRead(2)){
+    thisAuto = RED_MID;
+  }else if (analogRead(3)){
+    thisAuto = BLUE_MID;
   }
 }
 
@@ -44,60 +48,18 @@ void MyRobot::moveTo(unsigned position) {
  * @param dfw instance of the DFW controller
  */
  void MyRobot::autonomous( long time){
-  if(!doneWithAuto){
-    Serial.println("IN AUTO");
     switch(thisAuto){
       case LOW_GOAL:
         lowGoalAuto();
         break;
+      case BLUE_MID:
+        blueMidGoalAuto();
+        break;
+      case RED_MID:
+        redMidGoalAuto();
+        
     };
-  }
-    /**
-     * TODO
-     */
-    //driveBase->drive(1,1);
-  /*Serial.println("NumLines : " + String(numLines));
-		switch(curState){
-      case DRIVE_UNTIL_FOURTH:
-      Serial.println("DRIVING");
-        if(numLines >= 4){
-          driveBase->drive(0,0);
-          curState = TURN;
-        }else{
-          if(lTracker.getState() == LineTracker::HIT_LINE){
-            curState = ON_LINE; 
-            numLines++;
-          }
-          driveBase->drive(initialDriveSpeed, initialDriveSpeed);
-        }
-        break;
-      case ON_LINE://Makes sure that the robot doesn't read the same white line multiple times
-        if(lTracker.getState() == LineTracker::FORWARD){
-          curState = DRIVE_UNTIL_FOURTH;
-        }
-        break;
-      case TURN: 
-        if(time == timeToStopTurning){
-          driveBase->drive(0, 0);
-          curState = BACK_UP;
-        }else if (curTeam == BLUE){
-          driveBase->drive(turnSpeed ,-turnSpeed);
-        }else{
-          driveBase->drive(-turnSpeed, turnSpeed);
-        }
-        break;
-      case BACK_UP:
-        if(!digitalRead(BUMPER_PORT)){
-          curState = DUMP_BALLS;
-        }else{
-          driveBase->drive(-.5,-.5);
-          arm->dumpBalls();
-        }
-        break;
-     case DUMP_BALLS:
-      arm->doState();
-      break;
-		}*/
+    
  }
 /**
  * Called by the controller between communication with the wireless controller
@@ -169,7 +131,7 @@ void MyRobot::moveTo(unsigned position) {
           driveBase->drive(0,0);
           curLowGoalState = DUMP;
         }else{
-          driveBase->drive(.2,.2);
+          driveBase->drive(.4,.4);
         }
         break;
       case DUMP:
@@ -182,17 +144,113 @@ void MyRobot::moveTo(unsigned position) {
     ROTATE_NINETY,
     DRIVE_BACKWARDS,
     LINEUP_FORWARDS,
-    DUMP
+    MID_DUMP
  };
  MidGoalAutoState curMidAutoState = INITIAL_FORWARD;
   /**
    * Drives forward until the distance the robot travels is 92.75 inches
-   * Rotates 90 degrees
+   * Rotates 90 degrees to the left
    * Drives backwards until it hits it's bump switch
    * Drives forward 1.5 inches
    * Dumps it's payload
    */
  void MyRobot::blueMidGoalAuto(){
-  
+  switch(curMidAutoState){
+    case INITIAL_FORWARD:
+        
+      if(rEnc->getDegrees() >= 1240 || lEnc->getDegrees() >= 1240){
+        driveBase->drive(0,0);
+        curMidAutoState = ROTATE_NINETY;
+        lEnc->zero();
+        rEnc->zero();
+      }else{
+        driveBase->drive(.76,.75);
+      }
+      break;
+    case ROTATE_NINETY:
+      if(rEnc->getDegrees() >= 170|| lEnc->getDegrees()>= 170){
+        driveBase->drive(0,0);
+        curMidAutoState = DRIVE_BACKWARDS;
+        lEnc->zero();
+        rEnc->zero();
+      }else{
+        driveBase->drive(.5, -.5);
+      }
+      break;
+    case DRIVE_BACKWARDS:
+      if(!digitalRead(bumpSwitch) || rEnc->getDegrees() >= 300){
+          curMidAutoState = LINEUP_FORWARDS;
+          lEnc->zero();
+          rEnc->zero();
+        }else{
+          driveBase->drive(-.5, -.5);
+        }
+      break;
+    case LINEUP_FORWARDS:
+        if(rEnc->getDegrees() >= 85 || lEnc->getDegrees() >=85){
+          driveBase->drive(0,0);
+          curMidAutoState = MID_DUMP;
+        }else{
+          driveBase->drive(.4,.4);
+        }
+      break;
+    case MID_DUMP:
+      arm->doState();
+      break;
+  }
+ }
+
+   /**
+   * Auto for red side middle goal
+   * Drives forward until the distance the robot travels is 92.75 inches
+   * Rotates 90 degrees to the right
+   * Drives backwards until it hits it's bump switch
+   * Drives forward 1.5 inches
+   * Dumps it's payload
+   */
+ void MyRobot::redMidGoalAuto(){
+  switch(curMidAutoState){
+    case INITIAL_FORWARD:
+        
+      if(rEnc->getDegrees() >= 1373 || lEnc->getDegrees() >= 1373){
+        driveBase->drive(0,0);
+        curMidAutoState = ROTATE_NINETY;
+        lEnc->zero();
+        rEnc->zero();
+      }else{
+        driveBase->drive(.76,.75);
+      }
+      break;
+    case ROTATE_NINETY:
+      if(rEnc->getDegrees() >= 170|| lEnc->getDegrees()>= 170){
+        driveBase->drive(0,0);
+        curMidAutoState = DRIVE_BACKWARDS;
+        lEnc->zero();
+        rEnc->zero();
+      }else{
+        driveBase->drive(-.5, .5);
+      }
+      break;
+    case DRIVE_BACKWARDS:
+      if(!digitalRead(bumpSwitch) || rEnc->getDegrees() >= 300){
+          curMidAutoState = LINEUP_FORWARDS;
+          lEnc->zero();
+          rEnc->zero();
+        }else{
+          driveBase->drive(-.5, -.5);
+        }
+      break;
+    case LINEUP_FORWARDS:
+        if(rEnc->getDegrees() >= 85 || lEnc->getDegrees() >=85){
+          driveBase->drive(0,0);
+          curMidAutoState = MID_DUMP;
+        }else{
+          driveBase->drive(.4,.4);
+        }
+      break;
+    case MID_DUMP:
+      arm->doState();
+      break;
+  }
  }
 

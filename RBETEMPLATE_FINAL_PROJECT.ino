@@ -15,12 +15,11 @@
 #include "MyRobot.h"
 
 const int LEFT_DRIVE_MOTOR_PORT = 11;
-const int RIGHT_DRIVE_MOTOR_PORT = 9;
+const int RIGHT_DRIVE_MOTOR_PORT = 4;
 const int INTAKE_MOTOR_PORT = 8;
 const int ARM_MOTOR_PORT = 10;
 const int ARM_POT_PIN = 11;
 void convertJoystickSignalToDrive(double &lValue, double &rValue);
-
 
 MyRobot robot;
 DFW dfw(&robot); // Instantiates the DFW object and setting the debug pin. The debug pin will be set high if no communication is seen after 2 seconds

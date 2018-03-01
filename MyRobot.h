@@ -12,7 +12,8 @@ class MyRobot :public AbstractDFWRobot{
   private:
     void lowGoalAuto();
     void blueMidGoalAuto();
-     const int bumpSwitch = 25;
+    void redMidGoalAuto();
+    const int bumpSwitch = 25;
   public:
   	DFW * dfw;
     DriveTrain *driveBase;
