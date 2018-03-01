@@ -24,21 +24,30 @@ void convertJoystickSignalToDrive(double &lValue, double &rValue);
 
 MyRobot robot;
 DFW dfw(&robot); // Instantiates the DFW object and setting the debug pin. The debug pin will be set high if no communication is seen after 2 seconds
-DriveTrain *driveTrain;
-Intake *intake;
-Arm *arm;
-
+MyEncoder lEnc;
+MyEncoder rEnc;
+void lEncFuncs(){
+  lEnc.encoderTurn();
+}
+void rEncFuncs(){
+  rEnc.encoderTurn();
+}
 void setup() {
 	Serial.begin(9600); // Serial output begin. Only needed for debug
 	dfw.begin(); // Serial1 output begin for DFW library. Buad and port #."Serial1 only"
 	robot.initialize(new DriveTrain(LEFT_DRIVE_MOTOR_PORT, RIGHT_DRIVE_MOTOR_PORT),
 	                 new Intake(INTAKE_MOTOR_PORT),
-	                 new Arm(ARM_MOTOR_PORT, ARM_POT_PIN));
+	                 new Arm(ARM_MOTOR_PORT, ARM_POT_PIN),
+	                 &lEnc,
+	                 &rEnc);
   robot.dfw=&dfw;
+  attachInterrupt(digitalPinToInterrupt(2), lEncFuncs, HIGH);
+  attachInterrupt(digitalPinToInterrupt(3), rEncFuncs, HIGH);
 }
 void loop() {
   dfw.run();
-  robot.teleop(0);
+  //robot.teleop(0);
+  //lt.getState();
 }
 
 

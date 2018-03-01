@@ -24,7 +24,7 @@ void Arm::doState(){
   int potValue;
   int perDev;
   if(abs(perDev = (requiredAngle - (potValue = analogRead(potPin)))) > POT_LEEWAY){
-    armMotor.write(convertMotorSignal(-(perDev * pK)));
+    armMotor.write(convertMotorSignal((perDev * pK)));
   }
 }
 /**
