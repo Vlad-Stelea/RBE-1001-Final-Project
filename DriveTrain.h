@@ -12,6 +12,8 @@ class DriveTrain{
     void testEncoders();
   public:
     DriveTrain(int leftMotorPort, int rightMotorPort);
+    void driveStraight(double distance, double speedVal);
     void drive(double lValue, double rValue);
+    void rotateTo(int angle);
     void stopDriving();
 };

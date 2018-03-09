@@ -25,23 +25,12 @@ MyRobot robot;
 DFW dfw(&robot); // Instantiates the DFW object and setting the debug pin. The debug pin will be set high if no communication is seen after 2 seconds
 MyEncoder lEnc;
 MyEncoder rEnc;
-/**
- * Callback functions for encoders everytime a tick occurs
- * Cannot attach interupts directly withing the encoder class because it would require
- *  everything to be static
- */
 void lEncFuncs(){
   lEnc.encoderTurn();
 }
 void rEncFuncs(){
   rEnc.encoderTurn();
 }
-/**
- * Sets up all variables needed as well as initializing the robot
- * Each system is passed in as a pointer
- * Made testing each system easier because was able to just create a system and run tests in 
- *  the main loop
- */
 void setup() {
 	Serial.begin(9600); // Serial output begin. Only needed for debug
 	dfw.begin(); // Serial1 output begin for DFW library. Buad and port #."Serial1 only"
@@ -54,11 +43,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(2), lEncFuncs, HIGH);
   attachInterrupt(digitalPinToInterrupt(3), rEncFuncs, HIGH);
 }
-/**
- * Main loop for the program
- */
 void loop() {
   dfw.run();
+  //robot.teleop(0);
+  //lt.getState();
 }
 
 
