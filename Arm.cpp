@@ -1,60 +1,66 @@
-#include "Arm.h"
-#include <Arduino.h>
-
-Arm::Arm(int motorPin, int potPort):potPin(potPort){
-  armMotor.attach(motorPin, 1000, 2000);
-  state = collect;
-}
-/**
- * Sets the state to be ready to dump balls by changing the requiredAngle
- */
-void Arm::dumpBalls(){
-  requiredAngle = dumpAngle;
-}
-/**
- * Sets the state to be in the pickup position by changing the requiredAngle
- */
-void Arm::pickUpPosition(){
-  requiredAngle = downAngle;
-}
-/**
- * incrementally moves the arm to the desired angle using proportional control
- */
-void Arm::doState(){
-  int potValue;
-  int perDev;
-  if(abs(perDev = (requiredAngle - (potValue = analogRead(potPin)))) > POT_LEEWAY){
-    armMotor.write(convertMotorSignal((perDev * pK)));
-  }
-}
-/**
- * Returns the value that the potentiometer attached to the arm is outputing
- * @return integer from 0 to 1023 where 0 and 1023 represent full rotations in oposite directions
- */
-int Arm::calibrationMethod(){
-  return analogRead(potPin);
-}
-/**
- * Toggles the arm 
- *  this means that if the arm is in the dumping position it changes it to the collecting position and vice versa
- */
-void Arm::togglePosition(){
-  if(state == collect){
-    dumpBalls();
-    state = dump;
-  }else{
-    pickUpPosition();
+  #include "Arm.h"
+  #include <Arduino.h>
+  
+  /**
+   * Instantiates an arm object
+   * @param motorPin the port that the motor is plugged into
+   * @param potPin the port that the potentiometer is plugged into
+   */
+  Arm::Arm(int motorPin, int potPort):potPin(potPort){
+    armMotor.attach(motorPin, 1000, 2000);
     state = collect;
   }
-  
-}
-/**
- * TODO give proper commenting
- */
-int Arm::convertMotorSignal(int motorSpeed){
-  if(motorSpeed > 90)
-    motorSpeed = 90;
-  if(motorSpeed < -90)
-    motorSpeed = -90;
-  return 90 + motorSpeed;
-}
+  /**
+   * Sets the state to be ready to dump balls by changing the requiredAngle
+   */
+  void Arm::dumpBalls(){
+    requiredAngle = dumpAngle;
+  }
+  /**
+   * Sets the state to be in the pickup position by changing the requiredAngle
+   */
+  void Arm::pickUpPosition(){
+    requiredAngle = downAngle;
+  }
+  /**
+   * incrementally moves the arm to the desired angle using proportional control
+   */
+  void Arm::doState(){
+    int potValue;
+    int perDev;
+    if(abs(perDev = (requiredAngle - (potValue = analogRead(potPin)))) > POT_LEEWAY){
+      armMotor.write(convertMotorSignal((perDev * pK)));
+    }
+  }
+  /**
+   * Returns the value that the potentiometer attached to the arm is outputing
+   * @return integer from 0 to 1023 where 0 and 1023 represent full rotations in oposite directions
+   */
+  int Arm::calibrationMethod(){
+    return analogRead(potPin);
+  }
+  /**
+   * Toggles the arm 
+   *  this means that if the arm is in the dumping position it changes it to the collecting position and vice versa
+   */
+  void Arm::togglePosition(){
+    if(state == collect){
+      dumpBalls();
+      state = dump;
+    }else{
+      pickUpPosition();
+      state = collect;
+    }
+    
+  }
+  /**
+   * Converts the value of the motorSpeed passed in to a valid integer for
+   *  the arm motor in doState()
+   */
+  int Arm::convertMotorSignal(int motorSpeed){
+    if(motorSpeed > 90)
+      motorSpeed = 90;
+    if(motorSpeed < -90)
+      motorSpeed = -90;
+    return 90 + motorSpeed;
+  }

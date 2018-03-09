@@ -8,27 +8,21 @@ enum autoState{
   BLUE_MID
 };
 
-autoState thisAuto; //represents the auto state of this program
+autoState thisAuto = RED_MID; //represents the auto state of this program
 
 bool r1Released = false;//keeps track if r1 has been released since it was pressed down
 /**
  * These are the execution runtions
  */
 void MyRobot::initialize(DriveTrain *driveTrain, Intake *intakeMech, Arm *armMech, MyEncoder *leftEnc, MyEncoder *rightEnc) {
-  pinMode(22, INPUT);
   driveBase = driveTrain;
   intake = intakeMech;
   arm = armMech;
   lEnc = leftEnc;
   rEnc = rightEnc;
+  lEnc->zero();
+  rEnc->zero();
   pinMode(bumpSwitch, INPUT_PULLUP);
-  if(analogRead(0)){
-    thisAuto = LOW_GOAL;
-  }else if(analogRead(2)){
-    thisAuto = RED_MID;
-  }else if (analogRead(3)){
-    thisAuto = BLUE_MID;
-  }
 }
 
 void MyRobot::moveTo(unsigned position) {
@@ -140,6 +134,8 @@ void MyRobot::moveTo(unsigned position) {
     }
  }
  enum MidGoalAutoState{
+    INITIAL_ROTATE,
+    INITIAL_BACKUP,
     INITIAL_FORWARD,
     ROTATE_NINETY,
     DRIVE_BACKWARDS,
@@ -156,8 +152,7 @@ void MyRobot::moveTo(unsigned position) {
    */
  void MyRobot::blueMidGoalAuto(){
   switch(curMidAutoState){
-    case INITIAL_FORWARD:
-        
+    case INITIAL_FORWARD:      
       if(rEnc->getDegrees() >= 1240 || lEnc->getDegrees() >= 1240){
         driveBase->drive(0,0);
         curMidAutoState = ROTATE_NINETY;
@@ -211,7 +206,7 @@ void MyRobot::moveTo(unsigned position) {
  void MyRobot::redMidGoalAuto(){
   switch(curMidAutoState){
     case INITIAL_FORWARD:
-        
+        Serial.println("INITIAL FORWARD");
       if(rEnc->getDegrees() >= 1373 || lEnc->getDegrees() >= 1373){
         driveBase->drive(0,0);
         curMidAutoState = ROTATE_NINETY;
@@ -222,6 +217,7 @@ void MyRobot::moveTo(unsigned position) {
       }
       break;
     case ROTATE_NINETY:
+      Serial.println("Rot");
       if(rEnc->getDegrees() >= 170|| lEnc->getDegrees()>= 170){
         driveBase->drive(0,0);
         curMidAutoState = DRIVE_BACKWARDS;
@@ -232,6 +228,7 @@ void MyRobot::moveTo(unsigned position) {
       }
       break;
     case DRIVE_BACKWARDS:
+      Serial.println("back");
       if(!digitalRead(bumpSwitch) || rEnc->getDegrees() >= 300){
           curMidAutoState = LINEUP_FORWARDS;
           lEnc->zero();
@@ -241,6 +238,7 @@ void MyRobot::moveTo(unsigned position) {
         }
       break;
     case LINEUP_FORWARDS:
+       Serial.println("forwards " + String(rEnc->getDegrees()));
         if(rEnc->getDegrees() >= 85 || lEnc->getDegrees() >=85){
           driveBase->drive(0,0);
           curMidAutoState = MID_DUMP;
@@ -249,6 +247,7 @@ void MyRobot::moveTo(unsigned position) {
         }
       break;
     case MID_DUMP:
+      Serial.println("DUMP");
       arm->doState();
       break;
   }

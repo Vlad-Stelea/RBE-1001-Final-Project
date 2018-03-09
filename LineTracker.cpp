@@ -1,5 +1,6 @@
 /**
  * An interface for the Line tracker on this robot
+ * Is never used onboard this robot because of trouble with values
  */
 #include <Arduino.h>
 #include "LineTracker.h"
@@ -30,7 +31,9 @@ LineTracker::FollowInstruction LineTracker::getState(){
   Serial.println("Forward");
   return FORWARD;
 }
-
+/**
+ * Calibrate the line tracker
+ */
 void LineTracker::calibrate(){
   Serial.println("LEFT PHOTO-RESISTOR: " + String(RIGHT_SENSOR_PORT) + " RIGHT PHOTO-RESISTOR: " + String(analogRead(LEFT_SENSOR_PORT)));
 }

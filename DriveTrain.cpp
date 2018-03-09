@@ -11,15 +11,7 @@ DriveTrain::DriveTrain(int leftMotorPort, int rightMotorPort):
   leftMotor.attach(leftMotorPort, 1000, 2000);
   rightMotor.attach(rightMotorPort, 1000, 2000);
 }
-/**TODO
- * Drives the robot straight using PID for a set distance at a given speed
- * @param distance the distance in inches that the robot has to drive
- * @param speedVal the speed that the motors should be driving during this 
- *  function. This is a value between 0 and 1.
- */
-void DriveTrain::driveStraight(double distance, double speedVal){
-  
-}
+
 
 /**
  * Drive the robot using teleoperated control
@@ -29,15 +21,10 @@ void DriveTrain::driveStraight(double distance, double speedVal){
 void DriveTrain::drive(double lValue, double rValue){
   rightMotor.write(90 - (90*rValue));
   leftMotor.write(90 + (90*lValue));
+  //Make sure encoders are working properly
   //testEncoders();
 }
-/** TODO implement
- * Rotate to the given angle using encoders and PID
- * @param angle angle in radians to rotate to from starting position
- */
-void DriveTrain::rotateTo(int angle){
-  
-}
+
 /**
  * Sets all motor output to zero
  */
